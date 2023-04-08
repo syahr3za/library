@@ -11,9 +11,28 @@ use App\Models\Member;
 use App\Models\Transaction;
 use App\Models\TransactionDetail;
 use Illuminate\Http\Request;
+use App\Models\User;
+use Illuminate\Support\Facades\Auth;
+use Spatie\Permission\Models\Role;
+use Spatie\Permission\Models\Permission;
 
 class HomeController extends Controller
 {      
+    /**
+     * Create a new controller instance.
+     *
+     * @return void
+     */
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
+
+    /**
+     * Show the application dashboard.
+     *
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
         public function dashboard()
     {
         $total_member = Member::count();
@@ -47,23 +66,8 @@ class HomeController extends Controller
         
         }
         return view('admin.dashboard', compact('total_member','total_book','total_author','total_publisher','data_donut','label_donut','data_bar','data_pie','label_pie'));
-
-    }       
-    /**
-     * Create a new controller instance.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        $this->middleware('auth');
-    }
-
-    /**
-     * Show the application dashboard.
-     *
-     * @return \Illuminate\Contracts\Support\Renderable
-     */
+        }
+ 
     public function index()
     {  
         //$member = Member::with('user')->get();
@@ -202,9 +206,41 @@ class HomeController extends Controller
 
         //return $data5;
 
-        $transactions = DB::table('transactions')->select('*')->join('members', 'members.id', '=', 'transactions.member_id')->get();
+        //$transactions = DB::table('transactions')->select('*')->join('members', 'members.id', '=', 'transactions.member_id')->get();
 
-        return $transactions;
-        return view('home');
+        //return $transactions;
+        //return view('home');
+    }
+
+    /*public function transactions()
+    {
+        if (Auth()->user()->can('index peminjaman')) {
+                $transactions = Transaction::with('members')->get();
+
+                return view('admin.transactions.index', compact('transactions'));
+        } else {
+                return abort('403');
+        }
+    }*/
+
+    public function test_spatie()
+    {
+        //$role = Role::create(['name' => 'petugas']);
+        //$permission = Permission::create(['name' => 'index peminjaman']);
+
+        //$role->givePermissionTo($permission);
+        //$permission->assignRole($role);
+
+        //$user = auth()->user();
+        //$user->assignRole('petugas');
+        //return $user;
+
+        //$user = User::with('roles')->get();
+        //return $user;
+
+        //$user = User::where('id', 1)->first();
+        //$user->removeRole('petugas');
     }
 }
+
+

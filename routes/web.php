@@ -62,3 +62,4 @@ Route::get('/api/transactions', [App\Http\Controllers\TransactionController::cla
 //Home
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'dashboard']);
 
+Route::get('/home/test_spatie', [App\Http\Controllers\HomeController::class, 'test_spatie']);

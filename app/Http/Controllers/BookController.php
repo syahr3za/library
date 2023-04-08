@@ -20,7 +20,9 @@ class BookController extends Controller
         $publishers = Publisher::all();
         $authors = Author::all();
         $catalogs = Catalog::all();
+        //$books = Book::with('author','catalog','publisher')->get();
 
+        //return $books;
         return view('admin.book', compact('publishers', 'authors', 'catalogs'));
     }
     public function api()

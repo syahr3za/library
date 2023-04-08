@@ -3,24 +3,56 @@
 namespace App\Http\Controllers;
 
 use App\Models\Book;
+use App\Models\Publisher;
+use App\Models\Author;
+use App\Models\Catalog;
 use App\Models\Member;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
 use App\Models\TransactionDetail;
 use DB;
+use Illuminate\Support\Facades\Auth;
 
 class TransactionController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
     public function index()
-    {   
-        //return keterlambatan()
+    {
+        // $publishers = Publisher::all();
+
+        // foreach ($publishers as $key => $publisher) {
+        //     $publisher->book = Book::where('publishers_id',$publisher->id)->count();  
+
+        // }
+
+        // return $publishers;
+
+        // $months = [];
+
+        // foreach (range(0, 11) as $key => $value) {
+        //     $months[$key]['bulan'] = $key+1;
+        //     $months[$key]['data'] = Transaction::whereMonth('date_start', '=', $key+1)->get();
+
+        //     if (count($months[$key]['data']) >= 1) {
+        //         $months[$key]['data'] = 'ada';
+        //     } else {
+        //         $months[$key]['data'] = 'tidak ada';
+        //     }
+
+        // }
+
+        // return $months;
+        // return keterlambatan()
         $transactions = Transaction::with('members')->get();
-                //return $transactions;
+        //return $transactions;
 
         return view('admin.transaction.index', compact('transactions'));
     }
@@ -34,12 +66,12 @@ class TransactionController extends Controller
         $transactions = Transaction::select('transactions.*', DB::raw('DATEDIFF(date_end, date_start) as lama_pinjam'))->with('members', 'books');
 
         if ($request->status) {
-                $transaction = Transaction::with('books', 'members')->where('status', '=', $request->status + 1)->get();
-            } else if ($request->dateSearch) {
-                $transaction = Transaction::with('books', 'members')->whereDate('date_start', '=', $request->date)->get();
-            } else {
-                $transaction = Transaction::with('books', 'members')->get();
-            }
+            $transaction = Transaction::with('books', 'members')->where('status', '=', $request->status + 1)->get();
+        } else if ($request->dateSearch) {
+            $transaction = Transaction::with('books', 'members')->whereDate('date_start', '=', $request->date)->get();
+        } else {
+            $transaction = Transaction::with('books', 'members')->get();
+        }
 
         $transactions = $transactions->get();
 
@@ -51,35 +83,39 @@ class TransactionController extends Controller
             $payment = 0;
 
             foreach ($value->books as $book) {
-                $payment = $payment+$book->price;
+                $payment = $payment + $book->price;
             }
 
-            $value->total_bayar = 'Rp '.number_format($payment);
-
+            $value->total_bayar = 'Rp ' . number_format($payment);
         }
 
         $datatables = datatables()->of($transactions)->addIndexColumn();
 
         return $datatables
-                ->addColumn('action', function($transaction){      
-                           $btn = '<a href="' . route('transactions.show', $transaction->id) . '" class="edit btn btn-info btn-sm" method="POST">View</a>';
-                           $btn = $btn.'<a href="' . route('transactions.edit', $transaction->id) . '" class="edit btn btn-primary btn-sm" method="POST">Edit</a>';
-                           $btn = $btn.'<form action="' . route('transactions.destroy', $transaction->id) . '" method="POST">
+            ->addColumn('action', function ($transaction) {
+                $btn = '<a href="' . route('transactions.show', $transaction->id) . '" class="edit btn btn-info btn-sm" method="POST">View</a>';
+                $btn = $btn . '<a href="' . route('transactions.edit', $transaction->id) . '" class="edit btn btn-primary btn-sm" method="POST">Edit</a>';
+                $btn = $btn . '<form action="' . route('transactions.destroy', $transaction->id) . '" method="POST">
                             <input type="hidden" name="_method" value="DELETE">
                             <input type="submit" value="Delete" class="btn btn-danger btn-sm" onclick="return confirm(`Are you sure for delete this one?`)">
                             ' . csrf_field() . '
                             </form>';
-         
-                            return $btn;
-                    })
-                ->rawColumns(['action'])
-                ->make(true);   
+
+                return $btn;
+            })
+            ->rawColumns(['action'])
+            ->make(true);
     }
     public function create()
     {
-        $books = Book::where('qty', '!=', '0')->get();
-        $members = Member::all();
-        return view('admin.transaction.create', compact('members','books'));
+        if (Auth()->user()->role('petugas')) {
+
+            $books = Book::where('qty', '!=', '0')->get();
+            $members = Member::all();
+            return view('admin.transaction.create', compact('members', 'books'));
+        } else {
+            return abort('403');
+        }
     }
     /**
      * Store a newly created resource in storage.
@@ -128,9 +164,9 @@ class TransactionController extends Controller
      */
     public function show(Transaction $transaction)
     {
-        $transaction = Transaction::with('members','books')->find($transaction->id);
+        $transaction = Transaction::with('members', 'books')->find($transaction->id);
         $books = Book::all();
-        return view('admin.transaction.show', compact('transaction','books'));
+        return view('admin.transaction.show', compact('transaction', 'books'));
     }
 
     /**
@@ -141,10 +177,10 @@ class TransactionController extends Controller
      */
     public function edit(Transaction $transaction)
     {
-        $transaction = Transaction::with('members','books')->find($transaction->id);
+        $transaction = Transaction::with('members', 'books')->find($transaction->id);
         $members = Member::all();
-        $books = Book::where('qty','!=','0')->get();
-        return view('admin.transaction.edit', compact('transaction','books','members'));
+        $books = Book::where('qty', '!=', '0')->get();
+        return view('admin.transaction.edit', compact('transaction', 'books', 'members'));
     }
 
     /**
@@ -161,7 +197,7 @@ class TransactionController extends Controller
             'date_start' => ['required'],
             'date_end' => ['required'],
             'books' => ['required'],
-            'status' => ['required','boolean']
+            'status' => ['required', 'boolean']
         ]);
         //update ke transaction
         $transaction->update([
@@ -171,7 +207,7 @@ class TransactionController extends Controller
             'status' => request('status'),
         ]);
 
-        TransactionDetail::where('transaction_id',$transaction->id)->delete();
+        TransactionDetail::where('transaction_id', $transaction->id)->delete();
 
         $books = request('books');
         foreach ($books as $book => $value) {
@@ -181,13 +217,13 @@ class TransactionController extends Controller
                 'qty' => 1
             ]);
             //jika buku sdh kembali qty tambah 1
-            if(request('status') == 1) {
-                $update = Book::where('id',$value)->first();
+            if (request('status') == 1) {
+                $update = Book::where('id', $value)->first();
                 $update->update([
                     'qty' => $update->qty + 1
                 ]);
                 //juka buku sdh kembali qty di transaksi detail jadi 0
-                $transaction_details = TransactionDetail::where('transaction_id',$transaction->id)->get();
+                $transaction_details = TransactionDetail::where('transaction_id', $transaction->id)->get();
                 foreach ($transaction_details as $td) {
                     $td->update([
                         'qty' => 0
@@ -207,10 +243,15 @@ class TransactionController extends Controller
      */
     public function destroy(Transaction $transaction)
     {
-        TransactionDetail::where('transaction_id',$transaction->id)->delete();
+        if (Auth()->user->role('petugas')) {
 
-        $transaction->delete();
-        //return $transaction;
-        return redirect('transactions');
+            TransactionDetail::where('transaction_id', $transaction->id)->delete();
+
+            $transaction->delete();
+            //return $transaction;
+            return redirect('transactions');
+        } else {
+            return abort('403');
+        }
     }
 }

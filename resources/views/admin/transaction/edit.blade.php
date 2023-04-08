@@ -15,6 +15,7 @@
 <link rel="stylesheet" href="{{ asset('assets/plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css') }}">
 @endsection
 
+@role('petugas')
 @section('content')
     <div class="row justify-content-center">
        <div class="col-md-6">
@@ -89,6 +90,7 @@
 
                 
 @endsection
+@endrole
 
 @section('js')
 <!-- Select2 -->

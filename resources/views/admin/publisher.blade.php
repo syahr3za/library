@@ -34,57 +34,57 @@
 			</div>
 		</div>
 	</div>
+</div>
 
-		<div class="modal fade" id="modal-default">
-		  	<div class="modal-dialog">
-    			<div class="modal-content">
-    				<form method="POST" :action="actionUrl" autocomplete="off" @submit="submitForm($event, data.id)">
-	      				<div class="modal-header">
-        					<h4 class="modal-title">Publisher</h4>
-			        		<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-	          					<span aria-hidden="true">&times;</span>
-			        		</button>
-	      				</div>
-					    <div class="modal-body">
-			        	@csrf	
-					        <input type="hidden" name="_method" value="PUT" v-if="editStatus">		
-					        <div class="form-group">
-				        		<label>Name</label>
-				        		<input type="text" name="name" class="form-control @error('name') is-invalid @enderror" placeholder="Enter name" :value="data.name">
-				        		@error('name')
-	            					<div class="alert alert-danger">{{$message}}</div>
-		            			@enderror
-					        </div>
-					        <div class="form-group">
-				        		<label>Email</label>
-				        		<input type="email" name="email" class="form-control @error('email') is-invalid @enderror" placeholder="Enter Email" :value="data.email">
-				        		@error('email')
-	            					<div class="alert alert-danger">{{$message}}</div>
-		            			@enderror
-					        </div>
-					        <div class="form-group">
-				        		<label>Phone Number</label>
-				        		<input type="phone_number" name="phone_number" class="form-control @error('phone_number') is-invalid @enderror" placeholder="Enter phone number" :value="data.phone_number">
-				        		@error('phone_number')
-	            					<div class="alert alert-danger">{{$message}}</div>
-		            			@enderror
-					        </div>
-					        <div class="form-group">
-				        		<label>Alamat</label>
-				        		<input type="text" name="address" class="form-control @error('address') is-invalid @enderror" placeholder="Enter address" :value="data.address">
-				        		@error('address')
-	            					<div class="alert alert-danger">{{$message}}</div>
-		            			@enderror
-					        </div>
-			      		</div>
-						    <div class="modal-footer justify-content-between">
-							    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-							    <button type="submit" class="btn btn-primary">Save changes</button>
-							</div>
-					</form>
-				</div>
-			</div>
+<div class="modal fade" id="modal-default">
+  	<div class="modal-dialog">
+		<div class="modal-content">
+			<form method="POST" :action="actionUrl" autocomplete="off" @submit="submitForm($event, data.id)">
+  				<div class="modal-header">
+					<h4 class="modal-title">Publisher</h4>
+	        		<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+      					<span aria-hidden="true">&times;</span>
+	        		</button>
+  				</div>
+			    <div class="modal-body">
+	        	@csrf	
+			        <input type="hidden" name="_method" value="PUT" v-if="editStatus">		
+			        <div class="form-group">
+		        		<label>Name</label>
+		        		<input type="text" name="name" class="form-control @error('name') is-invalid @enderror" placeholder="Enter name" :value="data.name">
+		        		@error('name')
+        					<div class="alert alert-danger">{{$message}}</div>
+            			@enderror
+			        </div>
+			        <div class="form-group">
+		        		<label>Email</label>
+		        		<input type="email" name="email" class="form-control @error('email') is-invalid @enderror" placeholder="Enter Email" :value="data.email">
+		        		@error('email')
+        					<div class="alert alert-danger">{{$message}}</div>
+            			@enderror
+			        </div>
+			        <div class="form-group">
+		        		<label>Phone Number</label>
+		        		<input type="phone_number" name="phone_number" class="form-control @error('phone_number') is-invalid @enderror" placeholder="Enter phone number" :value="data.phone_number">
+		        		@error('phone_number')
+        					<div class="alert alert-danger">{{$message}}</div>
+            			@enderror
+			        </div>
+			        <div class="form-group">
+		        		<label>Alamat</label>
+		        		<input type="text" name="address" class="form-control @error('address') is-invalid @enderror" placeholder="Enter address" :value="data.address">
+		        		@error('address')
+        					<div class="alert alert-danger">{{$message}}</div>
+            			@enderror
+			        </div>
+	      		</div>
+				    <div class="modal-footer justify-content-between">
+					    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+					    <button type="submit" class="btn btn-primary">Save changes</button>
+					</div>
+			</form>
 		</div>
+	</div>
 </div>
 @endsection
 
